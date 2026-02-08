@@ -192,6 +192,7 @@ const TournamentDetailsPage = (data: { data: TournamentResponseData }) => {
                   </FormLabel>
                   <FormControl>
                     <Select
+                      key={field.value}
                       value={field.value}
                       onValueChange={field.onChange}
                     >
@@ -255,6 +256,7 @@ const TournamentDetailsPage = (data: { data: TournamentResponseData }) => {
                   </FormLabel>
                   <FormControl>
                     <Select
+                      key={field.value}
                       value={field.value}
                       onValueChange={field.onChange}
                     >
@@ -283,6 +285,7 @@ const TournamentDetailsPage = (data: { data: TournamentResponseData }) => {
                   </FormLabel>
                   <FormControl>
                     <Select
+                      key={String(field.value)}
                       value={String(field.value)}
                       onValueChange={(value) => field.onChange(Number(value))}
                     >
