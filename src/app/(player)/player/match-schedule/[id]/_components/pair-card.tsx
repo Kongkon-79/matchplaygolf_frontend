@@ -1,43 +1,43 @@
-"use client";
-import React, { useState } from "react";
-import { Match } from "./draw";
-import Image from "next/image";
-import PairVsModal from "./pair-vs-modal";
-import MomentsModal from "./moments-modal";
+'use client'
+import React, { useState } from 'react'
+import { Match } from './draw'
+import Image from 'next/image'
+import PairVsModal from './pair-vs-modal'
+import MomentsModal from './moments-modal'
 
 const PairCard = ({
   item,
   index,
   getStatusColor,
 }: {
-  item: Match;
-  index: number;
-  getStatusColor: (value: string) => void;
+  item: Match
+  index: number
+  getStatusColor: (value: string) => void
 }) => {
-  const [isPairVsModalOpen, setIsPairVsModalOpen] = useState(false);
-  const [matchInfo, setMatchInfo] = useState<Match>();
-  const [isModalOpen, setIsModalOpen] = useState<boolean>();
+  const [isPairVsModalOpen, setIsPairVsModalOpen] = useState(false)
+  const [matchInfo, setMatchInfo] = useState<Match>()
+  const [isModalOpen, setIsModalOpen] = useState<boolean>()
 
-  const pairWinner1 = item?.winner === item?.pair1Id?._id;
-  const pairWinner2 = item?.winner === item?.pair2Id?._id;
+  const pairWinner1 = item?.winner === item?.pair1Id?._id
+  const pairWinner2 = item?.winner === item?.pair2Id?._id
 
   const handlePairVsOpen = (match: Match) => {
-    setIsPairVsModalOpen(true);
-    setMatchInfo(match);
-  };
+    setIsPairVsModalOpen(true)
+    setMatchInfo(match)
+  }
 
   const handlePairCloseModal = () => {
-    setIsPairVsModalOpen(false);
-  };
+    setIsPairVsModalOpen(false)
+  }
 
   const handleOpenModal = (match: Match) => {
-    setIsModalOpen(true);
-    setMatchInfo(match);
-  };
+    setIsModalOpen(true)
+    setMatchInfo(match)
+  }
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+    setIsModalOpen(false)
+  }
 
   return (
     <div className="flex items-center gap-5 space-y-5">
@@ -50,7 +50,7 @@ const PairCard = ({
           {/* winner 1 card */}
           <div
             className={`border-r border-gray-300 lg:w-1/2 p-6 flex items-center gap-5 ${
-              pairWinner1 ? `bg-[#39674b] text-white` : ""
+              pairWinner1 ? `bg-[#39674b] text-white` : ''
             }`}
           >
             <div className="flex items-center gap-3">
@@ -65,7 +65,7 @@ const PairCard = ({
                   />
                 ) : (
                   <span className="text-lg font-semibold text-red-800">
-                    {item.pair1Id?.player1?.fullName?.charAt(0) || "P1"}
+                    {item.pair1Id?.player1?.fullName?.charAt(0) || 'P1'}
                   </span>
                 )}
               </div>
@@ -81,7 +81,7 @@ const PairCard = ({
                   />
                 ) : (
                   <span className="text-lg font-semibold text-red-800">
-                    {item.pair1Id?.player2?.fullName?.charAt(0) || "P2"}
+                    {item.pair1Id?.player2?.fullName?.charAt(0) || 'P2'}
                   </span>
                 )}
               </div>
@@ -89,13 +89,13 @@ const PairCard = ({
             <div>
               <div>
                 <h1 className="font-semibold">
-                  {item.pair1Id?.player1?.fullName || "Player 1"}
+                  {item.pair1Id?.player1?.fullName || 'Player 1'}
                 </h1>
               </div>
 
               <div>
                 <h1 className="font-semibold">
-                  {item.pair1Id?.player2?.fullName || "Player 2"}
+                  {item.pair1Id?.player2?.fullName || 'Player 2'}
                 </h1>
               </div>
             </div>
@@ -104,7 +104,7 @@ const PairCard = ({
           {/* vs button */}
           <div
             className={`px-8 flex items-center gap-2 ${
-              pairWinner1 && "flex-row-reverse"
+              pairWinner1 && 'flex-row-reverse'
             }`}
           >
             <div
@@ -113,10 +113,10 @@ const PairCard = ({
             >
               VS
             </div>
-            {item.status === "completed" && (
+            {item.status === 'completed' && (
               <div className="text-sm font-medium text-gray-600">
                 <span className="text-red-700 font-bold text-xl flex">
-                  <span>{item.pair1Score}</span> <span> /</span>{" "}
+                  <span>{item.pair1Score}</span> <span> /</span>{' '}
                   <span> {item.pair2Score}</span>
                 </span>
               </div>
@@ -126,7 +126,7 @@ const PairCard = ({
           {/* winner 2 card */}
           <div
             className={`border-l border-gray-300 lg:w-1/2 p-6 flex items-center gap-5 ${
-              pairWinner2 ? `bg-[#39674b] text-white` : ""
+              pairWinner2 ? `bg-[#39674b] text-white` : ''
             }`}
           >
             <div className="flex items-center gap-3">
@@ -141,7 +141,7 @@ const PairCard = ({
                   />
                 ) : (
                   <span className="text-lg font-semibold text-red-800">
-                    {item.pair2Id?.player1?.fullName?.charAt(0) || "P1"}
+                    {item.pair2Id?.player1?.fullName?.charAt(0) || 'P1'}
                   </span>
                 )}
               </div>
@@ -157,7 +157,7 @@ const PairCard = ({
                   />
                 ) : (
                   <span className="text-lg font-semibold text-red-800">
-                    {item.pair2Id?.player2?.fullName?.charAt(0) || "P2"}
+                    {item.pair2Id?.player2?.fullName?.charAt(0) || 'P2'}
                   </span>
                 )}
               </div>
@@ -165,13 +165,13 @@ const PairCard = ({
             <div>
               <div>
                 <h1 className="font-semibold">
-                  {item.pair2Id?.player1?.fullName || "Player 1"}
+                  {item.pair2Id?.player1?.fullName || 'Player 1'}
                 </h1>
               </div>
 
               <div>
                 <h1 className="font-semibold">
-                  {item.pair2Id?.player2?.fullName || "Player 2"}
+                  {item.pair2Id?.player2?.fullName || 'Player 2'}
                 </h1>
               </div>
             </div>
@@ -181,7 +181,7 @@ const PairCard = ({
         <div className="bg-[#eaeaeecb] py-2 px-4">
           <div
             className={`flex flex-col sm:flex-row ${
-              item.status === "completed" ? "justify-between" : "justify-center"
+              item.status === 'completed' ? 'justify-between' : 'justify-center'
             } items-start sm:items-center gap-4`}
           >
             <div></div>
@@ -189,36 +189,36 @@ const PairCard = ({
               <div className="text-right">
                 <span className="text-gray-700 text-sm">
                   {item?.date
-                    ? new Date(item?.date).toLocaleDateString("en-US", {
-                        weekday: "short",
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
+                    ? new Date(item?.date).toLocaleDateString('en-US', {
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
                       })
-                    : "Date not set"}
+                    : 'Date not set'}
                 </span>
                 <span>, </span>
                 <span className="text-gray-700 text-sm">
                   {item?.date
-                    ? new Date(item?.date).toLocaleTimeString("en-US", {
-                        hour: "2-digit",
-                        minute: "2-digit",
+                    ? new Date(item?.date).toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit',
                       })
-                    : ""}
+                    : ''}
                 </span>
               </div>
               <div className="flex items-center gap-3 justify-end">
                 <div
                   className={`text-sm font-medium px-3 py-1 rounded-full ${getStatusColor(
-                    item.status
+                    item.status,
                   )}`}
                 >
-                  {item.status || "upcoming"}
+                  {item.status || 'upcoming'}
                 </div>
               </div>
             </div>
 
-            {item.status === "completed" && (
+            {item.status === 'completed' && (
               <div>
                 <button
                   onClick={() => handleOpenModal(item)}
@@ -249,7 +249,7 @@ const PairCard = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default PairCard;
+export default PairCard

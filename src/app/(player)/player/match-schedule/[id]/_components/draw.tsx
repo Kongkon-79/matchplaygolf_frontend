@@ -1,9 +1,12 @@
+"use client";
 import React, { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton"; // Adjust import path based on your setup
 import Image from "next/image";
 import MomentsModal from "./moments-modal";
 import VsModal from "./vs-modal";
 import PairCard from "./pair-card";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 
 interface PairId {
   _id: string;
@@ -62,7 +65,7 @@ const Draw = ({ matches, isLoading }: Props) => {
   const [isVsModalOpen, setIsVsModalOpen] = useState(false);
   const [matchInfo, setMatchInfo] = useState<Match>();
   const [winner1, setWinner1] = useState<boolean>();
-
+  const { data: session } = useSession();
   const handleOpenModal = (match: Match, winner1: boolean) => {
     setIsModalOpen(true);
     setMatchInfo(match);
@@ -81,6 +84,10 @@ const Draw = ({ matches, isLoading }: Props) => {
   const handleVsCloseModal = () => {
     setIsVsModalOpen(false);
   };
+
+  const handleNotParticipant = () => {
+    toast.error("You are not a participant of this match. Access denied.");
+  };;
 
   // Skeleton loader
   if (isLoading) {
@@ -149,6 +156,16 @@ const Draw = ({ matches, isLoading }: Props) => {
       {matches.map((item, index) => {
         const winner1 = item?.winner === item?.player1Id?._id;
         const winner2 = item?.winner === item?.player2Id?._id;
+    const isParticipant = session?.user?.id && (
+      session.user.id === item.player1Id?._id ||
+      session.user.id === item.player2Id?._id ||
+      (item.matchType === "Pair" && (
+        session.user.id === item.pair1Id?.player1?._id ||
+        session.user.id === item.pair1Id?.player2?._id ||
+        session.user.id === item.pair2Id?.player1?._id ||
+        session.user.id === item.pair2Id?.player2?._id
+      ))
+    );
 
         return (
           <div key={item._id}>
@@ -191,26 +208,35 @@ const Draw = ({ matches, isLoading }: Props) => {
                     </div>
 
                     {/* vs button */}
-                    <div
-                      className={`px-8 flex items-center gap-2 ${
-                        winner1 && "flex-row-reverse"
-                      }`}
-                    >
-                      <div
-                        onClick={() => handleVsOpen(item)}
-                        className="text-sm text-gray-500 cursor-pointer"
-                      >
-                        VS
-                      </div>
-                      {item.status === "completed" && (
-                        <div className="text-sm font-medium text-gray-600">
-                          <span className="text-red-700 font-bold text-xl flex">
-                            <span>{item.player1Score}</span> <span> /</span>{" "}
-                            <span> {item.player2Score}</span>
-                          </span>
+                    {isParticipant ? (
+                        <div
+                          className={`px-8 flex items-center gap-2 ${
+                            winner1 && "flex-row-reverse"
+                          }`}
+                        >
+                          <div
+                            onClick={() => handleVsOpen(item)}
+                            className="text-base font-medium text-gray-500 cursor-pointer px-4 py-1 w-20 text-center"
+                          >
+                            VS
+                          </div>
+                          {item.status === "completed" && (
+                            <div className="text-sm font-medium text-gray-600">
+                              <span className="text-red-700 font-bold text-xl flex">
+                                <span>{item.player1Score}</span> <span> / </span>{" "}
+                                <span>{item.player2Score}</span>
+                              </span>
+                            </div>
+                          )}
                         </div>
+                      ) : (
+              <div
+                onClick={handleNotParticipant}
+                className="text-base font-medium text-gray-500 cursor-pointer px-4 py-1 w-20 text-center"
+              >
+                VS
+              </div>
                       )}
-                    </div>
 
                     {/* winner 2 card */}
                     <div
