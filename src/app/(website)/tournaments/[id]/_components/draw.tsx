@@ -5,6 +5,9 @@ import MomentsModal from "./moments-modal";
 import VsModal from "./vs-modal";
 import PairCard from "./pair-card";
 import { Button } from "@/components/ui/button";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
+import { canViewVsMatch, getVsAccessDeniedMessage } from "@/lib/vs-access";
 
 interface PairId {
   _id: string;
@@ -30,6 +33,7 @@ interface PairId {
 
 export interface Match {
   _id: string;
+  createdBy?: string;
   winnerColor: string;
   winner: string;
   matchType: "Single" | "Pair" | "Team";
@@ -71,6 +75,9 @@ interface Props {
   matches: Match[];
   isLoading: boolean;
   data: {
+    tournament?: {
+      createdBy?: string;
+    };
     matches: Match[];
     rounds: Round[];
   };
@@ -85,6 +92,7 @@ const Draw = ({
   roundNumber,
   setRoundNumber,
 }: Props) => {
+  const { data: session } = useSession();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isVsModalOpen, setIsVsModalOpen] = useState(false);
   const [matchInfo, setMatchInfo] = useState<Match>();
@@ -96,7 +104,30 @@ const Draw = ({
     setWinner1(winner1);
   };
 
+  const checkVsAccess = (match: Match) => {
+    const canView = canViewVsMatch({
+      role: session?.user?.role,
+      userId: session?.user?.id,
+      tournamentCreatedBy: data?.tournament?.createdBy,
+      match,
+    });
+
+    if (!canView) {
+      toast.error(
+        getVsAccessDeniedMessage({
+          role: session?.user?.role,
+        }),
+      );
+      return false;
+    }
+
+    return true;
+  };
+
   const handleVsOpen = (match: Match) => {
+    const canView = checkVsAccess(match);
+    if (!canView) return;
+
     setIsVsModalOpen(true);
     setMatchInfo(match);
   };
@@ -375,6 +406,7 @@ const Draw = ({
                     item={item as Match}
                     getStatusColor={getStatusColor}
                     index={index}
+                    onViewVs={checkVsAccess}
                   />
                 )}
               </div>

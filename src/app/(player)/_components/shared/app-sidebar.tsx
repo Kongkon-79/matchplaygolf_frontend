@@ -2,7 +2,6 @@
 import {
   BookAudio,
   LayoutDashboard,
-  LogOut,
   Settings,
 } from "lucide-react";
 
@@ -20,7 +19,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
+import LogoutConfirmDialog from "@/components/auth/logout-confirm-dialog";
 
 const items = [
   {
@@ -92,12 +91,7 @@ export function AppSidebar() {
 
             <div>
               <SidebarFooter className="border-t border-gray-300">
-                <button
-                  onClick={() => signOut({ callbackUrl: "/" })}
-                  className="font-medium text-red-500 flex items-center gap-2 pl-2 mt-5"
-                >
-                  <LogOut className="h-4 w-4" /> Log out
-                </button>
+                <LogoutConfirmDialog callbackUrl="/" label="Log out" />
               </SidebarFooter>
             </div>
           </div>

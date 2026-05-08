@@ -10,9 +10,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
 import Link from "next/link";
-import { LayoutDashboard, LogOut, User } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
+import { LayoutDashboard, User } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
+import LogoutConfirmDialog from "@/components/auth/logout-confirm-dialog";
 
 const NavDropdown = () => {
   const session = useSession();
@@ -76,14 +77,11 @@ const NavDropdown = () => {
           </DropdownMenuItem>
 
           <DropdownMenuItem>
-            <button
-              onClick={() => {
-                signOut({ callbackUrl: "/" });
-              }}
-              className="flex items-center gap-1 text-primary"
-            >
-              <LogOut className="h-4 w-4" /> Log Out
-            </button>
+            <LogoutConfirmDialog
+              callbackUrl="/"
+              variant="menu"
+              className="w-full justify-start gap-1"
+            />
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

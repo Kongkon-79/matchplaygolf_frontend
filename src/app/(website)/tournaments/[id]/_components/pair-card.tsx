@@ -9,10 +9,12 @@ const PairCard = ({
   item,
   index,
   getStatusColor,
+  onViewVs,
 }: {
   item: Match;
   index: number;
   getStatusColor: (value: string) => void;
+  onViewVs: (match: Match) => boolean;
 }) => {
   const [isPairVsModalOpen, setIsPairVsModalOpen] = useState(false);
   const [matchInfo, setMatchInfo] = useState<Match>();
@@ -22,8 +24,11 @@ const PairCard = ({
   const pairWinner2 = item?.winner === item?.pair2Id?._id;
 
   const handlePairVsOpen = (match: Match) => {
-    setIsPairVsModalOpen(true);
+    const canView = onViewVs(match);
+    if (!canView) return;
+
     setMatchInfo(match);
+    setIsPairVsModalOpen(true);
   };
 
   const handlePairCloseModal = () => {
@@ -240,11 +245,11 @@ const PairCard = ({
             )}
           </div>
 
-          {isPairVsModalOpen && (
+          {isPairVsModalOpen && matchInfo && (
             <PairVsModal
               handleCloseModal={handlePairCloseModal}
               isModalOpen={isPairVsModalOpen}
-              matchInfo={matchInfo as Match}
+              matchInfo={matchInfo}
             />
           )}
 
