@@ -20,6 +20,9 @@ interface LogoutConfirmDialogProps {
   iconClassName?: string;
   label?: string;
   variant?: "sidebar" | "menu";
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  hideTrigger?: boolean;
 }
 
 export default function LogoutConfirmDialog({
@@ -28,8 +31,20 @@ export default function LogoutConfirmDialog({
   iconClassName,
   label = "Log Out",
   variant = "sidebar",
+  open,
+  onOpenChange,
+  hideTrigger = false,
 }: LogoutConfirmDialogProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = typeof open === "boolean";
+  const isOpen = isControlled ? open : internalOpen;
+
+  const setIsOpen = (value: boolean) => {
+    if (!isControlled) {
+      setInternalOpen(value);
+    }
+    onOpenChange?.(value);
+  };
 
   const handleLogout = async () => {
     setIsOpen(false);
@@ -38,20 +53,23 @@ export default function LogoutConfirmDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <button
-          className={cn(
-            "flex items-center gap-2 transition-colors",
-            variant === "sidebar" &&
-              "font-medium text-red-500 pl-2 mt-5 hover:text-red-600",
-            variant === "menu" && "text-primary hover:text-primary/80",
-            className,
-          )}
-        >
-          <LogOut className={cn("h-4 w-4", iconClassName)} />
-          <span>{label}</span>
-        </button>
-      </DialogTrigger>
+      {!hideTrigger && (
+        <DialogTrigger asChild>
+          <button
+            type="button"
+            className={cn(
+              "flex items-center gap-2 transition-colors",
+              variant === "sidebar" &&
+                "font-medium text-red-500 pl-2 mt-5 hover:text-red-600",
+              variant === "menu" && "text-primary hover:text-primary/80",
+              className,
+            )}
+          >
+            <LogOut className={cn("h-4 w-4", iconClassName)} />
+            <span>{label}</span>
+          </button>
+        </DialogTrigger>
+      )}
 
       <DialogContent className="max-w-md rounded-2xl border border-gray-100 bg-white p-0 shadow-2xl">
         <DialogHeader className="space-y-0 border-b border-gray-100 px-6 py-5 text-left">
@@ -69,12 +87,14 @@ export default function LogoutConfirmDialog({
 
         <DialogFooter className="border-t border-gray-100 px-6 py-5">
           <button
+            type="button"
             onClick={() => setIsOpen(false)}
             className="rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-50"
           >
             Cancel
           </button>
           <button
+            type="button"
             onClick={handleLogout}
             className="rounded-lg bg-[#E53E3E] px-4 py-2 font-medium text-white transition-colors hover:bg-[#cc3232]"
           >

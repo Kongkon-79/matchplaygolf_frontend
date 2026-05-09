@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,6 +16,7 @@ import { useQuery } from "@tanstack/react-query";
 import LogoutConfirmDialog from "@/components/auth/logout-confirm-dialog";
 
 const NavDropdown = () => {
+  const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const session = useSession();
   const token = session?.data?.user?.accessToken;
   const role = session?.data?.user?.role;
@@ -76,15 +77,26 @@ const NavDropdown = () => {
             </Link>
           </DropdownMenuItem>
 
-          <DropdownMenuItem>
-            <LogoutConfirmDialog
-              callbackUrl="/"
-              variant="menu"
-              className="w-full justify-start gap-1"
-            />
+          <DropdownMenuItem
+            onSelect={(e) => {
+              e.preventDefault();
+              setIsLogoutOpen(true);
+            }}
+            className="cursor-pointer"
+          >
+            <div className="font-medium flex items-center gap-1 text-primary hover:text-primary/80">
+              Log Out
+            </div>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <LogoutConfirmDialog
+        callbackUrl="/"
+        open={isLogoutOpen}
+        onOpenChange={setIsLogoutOpen}
+        hideTrigger
+      />
     </div>
   );
 };
