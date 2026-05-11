@@ -129,7 +129,7 @@ const PairCard = ({
             {item.status === "completed" && (
               <div className="text-sm font-medium text-gray-600">
                 <span className="text-red-700 font-bold text-lg md:text-xl flex">
-                  <span>{item.pair1Score}</span> <span> /</span>{" "}
+                  <span>{item.pair1Score}</span> <span> & </span>{" "}
                   <span> {item.pair2Score}</span>
                 </span>
               </div>
