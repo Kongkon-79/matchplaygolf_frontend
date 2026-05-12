@@ -18,12 +18,14 @@ interface PairId {
     fullName: string;
     email: string;
     profileImage: string;
+    clubName?: string;
   };
   player2: {
     _id: string;
     fullName: string;
     email: string;
     profileImage: string;
+    clubName?: string;
   };
 }
 
@@ -38,12 +40,14 @@ export interface Match {
     fullName: string;
     profileImage: string;
     email: string;
+    clubName?: string;
   };
   player2Id: {
     _id: string;
     fullName: string;
     profileImage: string;
     email: string;
+    clubName?: string;
   };
   player1Score: string;
   player2Score: string;
@@ -71,7 +75,13 @@ interface Props {
   setRoundNumber?: (value: number) => void;
 }
 
-const Draw = ({ matches, isLoading, rounds = [], roundNumber = 1, setRoundNumber }: Props) => {
+const Draw = ({
+  matches,
+  isLoading,
+  rounds = [],
+  roundNumber = 1,
+  setRoundNumber,
+}: Props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isVsModalOpen, setIsVsModalOpen] = useState(false);
   const [matchInfo, setMatchInfo] = useState<Match>();
@@ -79,9 +89,8 @@ const Draw = ({ matches, isLoading, rounds = [], roundNumber = 1, setRoundNumber
   const { data: session } = useSession();
 
   // Filter matches by selected round
-  const filteredMatches = matches?.filter(
-    (match) => match.round === roundNumber
-  ) || [];
+  const filteredMatches =
+    matches?.filter((match) => match.round === roundNumber) || [];
 
   const handleOpenModal = (match: Match, winner1: boolean) => {
     setIsModalOpen(true);
@@ -181,7 +190,9 @@ const Draw = ({ matches, isLoading, rounds = [], roundNumber = 1, setRoundNumber
           {rounds.map((round) => (
             <Button
               key={round._id}
-              onClick={() => setRoundNumber && setRoundNumber(round.roundNumber)}
+              onClick={() =>
+                setRoundNumber && setRoundNumber(round.roundNumber)
+              }
               className={`h-[40px] sm:h-[45px] w-full min-w-[80px] sm:w-[130px] rounded-3xl hover:text-white transition-all duration-200 ${
                 roundNumber === round.roundNumber
                   ? "bg-primary text-white"
@@ -201,8 +212,8 @@ const Draw = ({ matches, isLoading, rounds = [], roundNumber = 1, setRoundNumber
         <div className="text-center py-10">
           <div className="text-gray-500 text-lg">No matches found</div>
           <p className="text-gray-400 mt-2">
-            {showRoundButtons 
-              ? `No matches scheduled for ${rounds.find(r => r.roundNumber === roundNumber)?.roundName || `Round ${roundNumber}`}`
+            {showRoundButtons
+              ? `No matches scheduled for ${rounds.find((r) => r.roundNumber === roundNumber)?.roundName || `Round ${roundNumber}`}`
               : "Create a match to get started"}
           </p>
         </div>
@@ -211,16 +222,15 @@ const Draw = ({ matches, isLoading, rounds = [], roundNumber = 1, setRoundNumber
           {filteredMatches.map((item, index) => {
             const winner1Flag = item?.winner === item?.player1Id?._id;
             const winner2Flag = item?.winner === item?.player2Id?._id;
-            const isParticipant = session?.user?.id && (
-              session.user.id === item.player1Id?._id ||
-              session.user.id === item.player2Id?._id ||
-              (item.matchType === "Pair" && (
-                session.user.id === item.pair1Id?.player1?._id ||
-                session.user.id === item.pair1Id?.player2?._id ||
-                session.user.id === item.pair2Id?.player1?._id ||
-                session.user.id === item.pair2Id?.player2?._id
-              ))
-            );
+            const isParticipant =
+              session?.user?.id &&
+              (session.user.id === item.player1Id?._id ||
+                session.user.id === item.player2Id?._id ||
+                (item.matchType === "Pair" &&
+                  (session.user.id === item.pair1Id?.player1?._id ||
+                    session.user.id === item.pair1Id?.player2?._id ||
+                    session.user.id === item.pair2Id?.player1?._id ||
+                    session.user.id === item.pair2Id?.player2?._id)));
 
             return (
               <div key={item._id}>
@@ -278,7 +288,8 @@ const Draw = ({ matches, isLoading, rounds = [], roundNumber = 1, setRoundNumber
                             {item.status === "completed" && (
                               <div className="text-sm font-medium text-gray-600">
                                 <span className="text-red-700 font-bold text-xl flex">
-                                  <span>{item.player1Score}</span> <span> & </span>{" "}
+                                  <span>{item.player1Score}</span>{" "}
+                                  <span> & </span>{" "}
                                   <span>{item.player2Score}</span>
                                 </span>
                               </div>
@@ -332,7 +343,14 @@ const Draw = ({ matches, isLoading, rounds = [], roundNumber = 1, setRoundNumber
                               : "justify-center"
                           } items-start sm:items-center gap-4`}
                         >
-                          <div></div>
+                          {/* Left side - Player 1 Club */}
+                          <div>
+                            <p className="truncate text-sm">
+                              {item.player1Id?.clubName || "No club assigned"}
+                            </p>
+                          </div>
+
+                          {/* Center - Date, Status, Moments */}
                           <div className="flex items-center gap-5">
                             <div className="text-right">
                               <span className="text-gray-700 text-sm">
@@ -344,7 +362,7 @@ const Draw = ({ matches, isLoading, rounds = [], roundNumber = 1, setRoundNumber
                                         month: "short",
                                         day: "numeric",
                                         year: "numeric",
-                                      }
+                                      },
                                     )
                                   : "Date not set"}
                               </span>
@@ -356,7 +374,7 @@ const Draw = ({ matches, isLoading, rounds = [], roundNumber = 1, setRoundNumber
                                       {
                                         hour: "2-digit",
                                         minute: "2-digit",
-                                      }
+                                      },
                                     )
                                   : ""}
                               </span>
@@ -364,7 +382,7 @@ const Draw = ({ matches, isLoading, rounds = [], roundNumber = 1, setRoundNumber
                             <div className="flex items-center gap-3 justify-end">
                               <div
                                 className={`text-sm font-medium px-3 py-1 rounded-full ${getStatusColor(
-                                  item.status
+                                  item.status,
                                 )}`}
                               >
                                 {item.status || "upcoming"}
@@ -372,16 +390,24 @@ const Draw = ({ matches, isLoading, rounds = [], roundNumber = 1, setRoundNumber
                             </div>
                           </div>
 
-                          {item.status === "completed" && (
+                          {/* Right side - Player 2 Club & Moments Button */}
+                          <div className="flex items-center gap-3">
                             <div>
+                              <p className="text-sm truncate">
+                                {item.player2Id?.clubName || "No club assigned"}
+                              </p>
+                            </div>
+                            {item.status === "completed" && (
                               <button
-                                onClick={() => handleOpenModal(item, winner1Flag)}
+                                onClick={() =>
+                                  handleOpenModal(item, winner1Flag)
+                                }
                                 className="text-primary font-semibold text-sm"
                               >
                                 Moments
                               </button>
-                            </div>
-                          )}
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
