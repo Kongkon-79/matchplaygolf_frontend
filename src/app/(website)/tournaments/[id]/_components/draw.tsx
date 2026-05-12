@@ -1,5 +1,6 @@
+"use client";
 import React, { useState } from "react";
-import { Skeleton } from "@/components/ui/skeleton"; // Adjust import path based on your setup
+import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import MomentsModal from "./moments-modal";
 import VsModal from "./vs-modal";
@@ -347,7 +348,11 @@ const Draw = ({
                               : "justify-center"
                           } items-start sm:items-center gap-3`}
                         >
-                          <div className="hidden sm:block"></div>
+                          <div>
+                            <p className="truncate text-sm">
+                              {item.player1Id.clubName || "No club assigned"}
+                            </p>
+                          </div>
                           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-5 w-full sm:w-auto">
                             <div className="text-right sm:text-left">
                               <span className="text-gray-700 text-xs sm:text-sm">
@@ -385,18 +390,26 @@ const Draw = ({
                                 {item.status || "upcoming"}
                               </div>
                             </div>
+
+                            {item.status === "completed" && (
+                              <div className="w-full sm:w-auto text-right mt-2 sm:mt-0">
+                                <button
+                                  onClick={() => handleOpenModal(item, winner1)}
+                                  className="text-xs sm:text-sm font-medium px-2 py-1 sm:px-3 sm:py-1 rounded-full bg-red-100 text-red-500"
+                                >
+                                  Moments
+                                </button>
+                              </div>
+                            )}
                           </div>
 
-                          {item.status === "completed" && (
-                            <div className="w-full sm:w-auto text-right mt-2 sm:mt-0">
-                              <button
-                                onClick={() => handleOpenModal(item, winner1)}
-                                className="text-primary font-semibold text-sm hover:underline"
-                              >
-                                Moments
-                              </button>
+                          <div className="flex items-center gap-3">
+                            <div>
+                              <p className="text-sm truncate">
+                                {item.player2Id.clubName || "No club assigned"}
+                              </p>
                             </div>
-                          )}
+                          </div>
                         </div>
                       </div>
                     </div>
