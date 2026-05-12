@@ -342,15 +342,11 @@ const Draw = ({
 
                       <div className="bg-[#eaeaeecb] py-3 px-4">
                         <div
-                          className={`flex flex-col sm:flex-row ${
-                            item.status === "completed"
-                              ? "justify-between"
-                              : "justify-center"
-                          } items-start sm:items-center gap-3`}
+                          className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3`}
                         >
                           <div>
                             <p className="truncate text-sm">
-                              {item.player1Id.clubName || "No club assigned"}
+                              {item?.player1Id?.clubName || "No club assigned"}
                             </p>
                           </div>
                           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-5 w-full sm:w-auto">
@@ -406,7 +402,7 @@ const Draw = ({
                           <div className="flex items-center gap-3">
                             <div>
                               <p className="text-sm truncate">
-                                {item.player2Id.clubName || "No club assigned"}
+                                {item?.player2Id?.clubName || "No club assigned"}
                               </p>
                             </div>
                           </div>

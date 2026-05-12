@@ -35,9 +35,6 @@ const PairCard = ({
     setIsPairVsModalOpen(false);
   };
 
-
-  
-
   const handleOpenModal = (match: Match) => {
     setIsModalOpen(true);
     setMatchInfo(match);
@@ -104,7 +101,6 @@ const PairCard = ({
                     {item.pair1Id?.player1?.fullName || "Player 1"}
                   </h1>
                 </div>
-
                 <div>
                   <h1 className="font-semibold text-xs sm:text-sm md:text-base truncate">
                     {item.pair1Id?.player2?.fullName || "Player 2"}
@@ -149,7 +145,6 @@ const PairCard = ({
                     {item.pair2Id?.player1?.fullName || "Player 1"}
                   </h1>
                 </div>
-
                 <div>
                   <h1 className="font-semibold text-xs sm:text-sm md:text-base truncate">
                     {item.pair2Id?.player2?.fullName || "Player 2"}
@@ -195,11 +190,19 @@ const PairCard = ({
 
         <div className="bg-[#eaeaeecb] py-3 px-4">
           <div
-            className={`flex flex-col sm:flex-row ${
-              item.status === "completed" ? "justify-between" : "justify-center"
-            } items-start sm:items-center gap-3`}
+            className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3`}
           >
-            <div className="hidden sm:block"></div>
+            {/* Left side - Pair 1 Club Names */}
+            <div>
+              <p className="truncate text-sm">
+                {item.pair1Id?.player1?.clubName || "No club assigned"}
+              </p>
+              <p className="truncate text-sm">
+                {item.pair1Id?.player2?.clubName || "No club assigned"}
+              </p>
+            </div>
+
+            {/* Center - Date, Status, and Moments */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-5 w-full sm:w-auto">
               <div className="text-right sm:text-left">
                 <span className="text-gray-700 text-xs sm:text-sm">
@@ -225,43 +228,55 @@ const PairCard = ({
               <div className="flex items-center gap-3 justify-end sm:justify-start">
                 <div
                   className={`text-xs sm:text-sm font-medium px-2 py-1 sm:px-3 sm:py-1 rounded-full ${getStatusColor(
-                    item.status
+                    item.status,
                   )}`}
                 >
                   {item.status || "upcoming"}
                 </div>
               </div>
+
+              {item.status === "completed" && (
+                <div className="w-full sm:w-auto text-right mt-2 sm:mt-0">
+                  <button
+                    onClick={() => handleOpenModal(item)}
+                    className="text-xs sm:text-sm font-medium px-2 py-1 sm:px-3 sm:py-1 rounded-full bg-red-100 text-red-500"
+                  >
+                    Moments
+                  </button>
+                </div>
+              )}
             </div>
 
-            {item.status === "completed" && (
-              <div className="w-full sm:w-auto text-right mt-2 sm:mt-0">
-                <button
-                  onClick={() => handleOpenModal(item)}
-                  className="text-primary font-semibold text-sm hover:underline"
-                >
-                  Moments
-                </button>
+            {/* Right side - Pair 2 Club Names */}
+            <div className="flex items-center gap-3">
+              <div>
+                <p className="text-sm truncate">
+                  {item.pair2Id?.player1?.clubName || "No club assigned"}
+                </p>
+                <p className="text-sm truncate">
+                  {item.pair2Id?.player2?.clubName || "No club assigned"}
+                </p>
               </div>
-            )}
+            </div>
           </div>
-
-          {isPairVsModalOpen && matchInfo && (
-            <PairVsModal
-              handleCloseModal={handlePairCloseModal}
-              isModalOpen={isPairVsModalOpen}
-              matchInfo={matchInfo}
-            />
-          )}
-
-          {isModalOpen && (
-            <MomentsModal
-              isModalOpen={isModalOpen}
-              handleCloseModal={handleCloseModal}
-              match={matchInfo as Match}
-              pairWinner1={pairWinner1}
-            />
-          )}
         </div>
+
+        {isPairVsModalOpen && matchInfo && (
+          <PairVsModal
+            handleCloseModal={handlePairCloseModal}
+            isModalOpen={isPairVsModalOpen}
+            matchInfo={matchInfo}
+          />
+        )}
+
+        {isModalOpen && (
+          <MomentsModal
+            isModalOpen={isModalOpen}
+            handleCloseModal={handleCloseModal}
+            match={matchInfo as Match}
+            pairWinner1={pairWinner1}
+          />
+        )}
       </div>
     </div>
   );
