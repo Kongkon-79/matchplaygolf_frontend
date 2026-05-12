@@ -16,12 +16,14 @@ interface PairId {
     fullName: string;
     email: string;
     profileImage: string;
+    clubName?: string;
   };
   player2: {
     _id: string;
     fullName: string;
     email: string;
     profileImage: string;
+    clubName?: string;
   };
 }
 
@@ -35,12 +37,14 @@ export interface Match {
     fullName: string;
     profileImage: string;
     email: string;
+    clubName?: string;
   };
   player2Id: {
     _id: string;
     fullName: string;
     profileImage: string;
     email: string;
+    clubName?: string;
   };
   player1Score: string;
   player2Score: string;
@@ -273,7 +277,8 @@ const Draw = ({
                           {item.status === "completed" && (
                             <div className="text-sm font-medium text-gray-600">
                               <span className="text-red-700 font-bold text-xl flex">
-                                <span>{item.player1Score}</span> <span> & </span>{" "}
+                                <span>{item.player1Score}</span>{" "}
+                                <span> & </span>{" "}
                                 <span> {item.player2Score}</span>
                               </span>
                             </div>
@@ -319,7 +324,14 @@ const Draw = ({
                               : "justify-center"
                           } items-start sm:items-center gap-4`}
                         >
-                          <div></div>
+                          {/* Left side - Player 1 Club */}
+                          <div className="min-w-[100px]">
+                            <p className="truncate text-sm">
+                              {item.player1Id?.clubName || "No club assigned"}
+                            </p>
+                          </div>
+
+                          {/* Center - Date & Status */}
                           <div className="flex items-center gap-5">
                             <div className="text-right">
                               <span className="text-gray-700 text-sm">
@@ -359,35 +371,45 @@ const Draw = ({
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-3">
-                            {item.status === "completed" ||
-                            item.status === "Completed" ? (
-                              <>
-                                <button
-                                  onClick={() => handleOpenModal(item, winner1)}
-                                  className="text-primary font-semibold text-sm hover:text-red-700 transition-colors"
-                                >
-                                  Moments
-                                </button>
+                          {/* Right side - Player 2 Club & Action Buttons */}
+                          <div className="flex items-center gap-3 min-w-[150px] justify-end">
+                            <div className="text-right">
+                              <p className="text-sm truncate">
+                                {item.player2Id?.clubName || "No club assigned"}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              {item.status === "completed" ||
+                              item.status === "Completed" ? (
+                                <>
+                                  <button
+                                    onClick={() =>
+                                      handleOpenModal(item, winner1)
+                                    }
+                                    className="text-primary font-semibold text-sm hover:text-red-700 transition-colors"
+                                  >
+                                    Moments
+                                  </button>
+                                  <button
+                                    onClick={() =>
+                                      handleEnterResultOpen(item, true)
+                                    }
+                                    className="text-blue-600 font-semibold text-sm hover:text-blue-700 transition-colors"
+                                  >
+                                    Edit Result
+                                  </button>
+                                </>
+                              ) : (
                                 <button
                                   onClick={() =>
-                                    handleEnterResultOpen(item, true)
+                                    handleEnterResultOpen(item, false)
                                   }
-                                  className="text-blue-600 font-semibold text-sm hover:text-blue-700 transition-colors"
+                                  className="text-primary font-semibold text-sm hover:text-red-700 transition-colors"
                                 >
-                                  Edit Result
+                                  Enter Result
                                 </button>
-                              </>
-                            ) : (
-                              <button
-                                onClick={() =>
-                                  handleEnterResultOpen(item, false)
-                                }
-                                className="text-primary font-semibold text-sm hover:text-red-700 transition-colors"
-                              >
-                                Enter Result
-                              </button>
-                            )}
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
