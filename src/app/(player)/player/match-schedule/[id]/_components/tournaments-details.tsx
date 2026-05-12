@@ -10,7 +10,7 @@ const TournamentsDetails = () => {
 
   const [roundNumber, setRoundNumber] = useState(1);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["tournaments", id, roundNumber],
     queryFn: async () => {
       const res = await fetch(
@@ -52,6 +52,7 @@ const TournamentsDetails = () => {
           rounds={data?.rounds}
           roundNumber={roundNumber}
           setRoundNumber={setRoundNumber}
+          refetchMatches={refetch}
         />
       </div>
     </div>

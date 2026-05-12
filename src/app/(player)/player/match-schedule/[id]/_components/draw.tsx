@@ -8,6 +8,7 @@ import PairCard from "./pair-card";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+import MatchViewModal from "./match-view-modal";
 
 interface PairId {
   _id: string;
@@ -73,6 +74,7 @@ interface Props {
   rounds?: Round[];
   roundNumber?: number;
   setRoundNumber?: (value: number) => void;
+  refetchMatches?: () => void;
 }
 
 const Draw = ({
@@ -81,11 +83,14 @@ const Draw = ({
   rounds = [],
   roundNumber = 1,
   setRoundNumber,
+  refetchMatches,
 }: Props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isVsModalOpen, setIsVsModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [matchInfo, setMatchInfo] = useState<Match>();
   const [winner1, setWinner1] = useState<boolean>();
+  const [viewMatchId, setViewMatchId] = useState<string>("");
   const { data: session } = useSession();
 
   // Filter matches by selected round
@@ -103,12 +108,22 @@ const Draw = ({
     setMatchInfo(match);
   };
 
+  const handleViewOpen = (matchId: string) => {
+    setViewMatchId(matchId);
+    setIsViewModalOpen(true);
+  };
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
 
   const handleVsCloseModal = () => {
     setIsVsModalOpen(false);
+  };
+
+  const handleViewCloseModal = () => {
+    setIsViewModalOpen(false);
+    setViewMatchId("");
   };
 
   const handleNotParticipant = () => {
@@ -232,6 +247,8 @@ const Draw = ({
                     session.user.id === item.pair2Id?.player1?._id ||
                     session.user.id === item.pair2Id?.player2?._id)));
 
+            console.log("isParticipant: ", isParticipant);
+
             return (
               <div key={item._id}>
                 {item?.matchType === "Single" || item?.matchType === "Team" ? (
@@ -344,13 +361,13 @@ const Draw = ({
                           } items-start sm:items-center gap-4`}
                         >
                           {/* Left side - Player 1 Club */}
-                          <div>
+                          <div className="min-w-[100px]">
                             <p className="truncate text-sm">
                               {item.player1Id?.clubName || "No club assigned"}
                             </p>
                           </div>
 
-                          {/* Center - Date, Status, Moments */}
+                          {/* Center - Date, Status */}
                           <div className="flex items-center gap-5">
                             <div className="text-right">
                               <span className="text-gray-700 text-sm">
@@ -387,26 +404,34 @@ const Draw = ({
                               >
                                 {item.status || "upcoming"}
                               </div>
+                              {item.status === "completed" && (
+                                <button
+                                  onClick={() =>
+                                    handleOpenModal(item, winner1Flag)
+                                  }
+                                  className="text-xs sm:text-sm font-medium px-2 py-1 sm:px-3 sm:py-1 rounded-full bg-red-100 text-red-500"
+                                >
+                                  Moments
+                                </button>
+                              )}
+                              {isParticipant && (
+                                <button
+                                  onClick={() => handleViewOpen(item._id)}
+                                   className="text-xs sm:text-sm font-medium px-2 py-1 sm:px-3 sm:py-1 rounded-full bg-purple-100 text-purple-600"
+                                >
+                                  View
+                                </button>
+                              )}
                             </div>
                           </div>
 
-                          {/* Right side - Player 2 Club & Moments Button */}
-                          <div className="flex items-center gap-3">
-                            <div>
+                          {/* Right side - Player 2 Club & Action Buttons */}
+                          <div className="flex items-center gap-3 min-w-[180px] justify-end">
+                            <div className="text-right">
                               <p className="text-sm truncate">
                                 {item.player2Id?.clubName || "No club assigned"}
                               </p>
                             </div>
-                            {item.status === "completed" && (
-                              <button
-                                onClick={() =>
-                                  handleOpenModal(item, winner1Flag)
-                                }
-                                className="text-primary font-semibold text-sm"
-                              >
-                                Moments
-                              </button>
-                            )}
                           </div>
                         </div>
                       </div>
@@ -418,6 +443,7 @@ const Draw = ({
                     item={item as Match}
                     getStatusColor={getStatusColor}
                     index={index}
+                    refetchMatches={refetchMatches}
                   />
                 )}
               </div>
@@ -426,20 +452,28 @@ const Draw = ({
         </div>
       )}
 
-      {isModalOpen && (
+      {isModalOpen && matchInfo && (
         <MomentsModal
           isModalOpen={isModalOpen}
           handleCloseModal={handleCloseModal}
-          match={matchInfo as Match}
+          match={matchInfo}
           winner1={winner1 as boolean}
         />
       )}
 
-      {isVsModalOpen && (
+      {isVsModalOpen && matchInfo && (
         <VsModal
           isModalOpen={isVsModalOpen}
           handleCloseModal={handleVsCloseModal}
-          matchInfo={matchInfo as Match}
+          matchInfo={matchInfo}
+        />
+      )}
+
+      {isViewModalOpen && (
+        <MatchViewModal
+          isOpen={isViewModalOpen}
+          onClose={handleViewCloseModal}
+          matchId={viewMatchId}
         />
       )}
     </div>
