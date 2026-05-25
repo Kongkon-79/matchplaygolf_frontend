@@ -109,6 +109,9 @@ const PlayersManagementContainer = () => {
               <TableHead className="text-sm font-normal leading-[150%] text-[#343A40] text-center py-4 ">
                 Country
               </TableHead>
+                 <TableHead className="text-sm font-normal leading-[150%] text-[#343A40] text-center py-4 ">
+                Club Name
+              </TableHead>
               <TableHead className="text-sm font-normal leading-[150%] text-[#343A40] text-center py-4 ">
                 Number
               </TableHead>
@@ -140,6 +143,9 @@ const PlayersManagementContainer = () => {
                   </TableCell>
                   <TableCell className="text-base font-normal text-[#68706A] leading-[150%] text-center py-4">
                    {item?.playerDetails?.country || "N/A"}
+                  </TableCell>
+                    <TableCell className="text-base font-normal text-[#68706A] leading-[150%] text-center py-4">
+                   {item?.playerDetails?.clubName || "N/A"}
                   </TableCell>
                   <TableCell className="text-base font-normal text-[#68706A] leading-[150%] text-center py-4">
                    {item?.playerDetails?.phone || "N/A"}
