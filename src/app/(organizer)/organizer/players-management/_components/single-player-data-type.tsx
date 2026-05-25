@@ -31,5 +31,6 @@ export interface Player {
   fullName?: string;
   email?: string;
   phone?: string;
+  clubName?: string;
   seeder?: number;
 }
