@@ -67,9 +67,9 @@ const TournamentRounds = (data: { data: TournamentResponseData & { rememberEmail
   console.log(data?.data)
 
   // const startDate = data?.data?.tournament?.startDate
-  const startDate = data?.data?.tournament?.startDate
-  ? new Date(data.data.tournament.startDate)
-  : null;
+  // const startDate = data?.data?.tournament?.startDate
+  // ? new Date(data.data.tournament.startDate)
+  // : null;
 
 
 
@@ -119,36 +119,125 @@ const TournamentRounds = (data: { data: TournamentResponseData & { rememberEmail
   });
 
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  // function onSubmit(values: z.infer<typeof formSchema>) {
 
-      if (!startDate) {
-    toast.error("Tournament start date not found");
-    return;
-  }
+  //     if (!startDate) {
+  //   toast.error("Tournament start date not found");
+  //   return;
+  // }
 
-  // 🔴 Validate rounds date
-  const invalidRound = values.rounds.find(
-    (round) => round.date && round.date <= startDate
-  );
+  // // 🔴 Validate rounds date
+  // const invalidRound = values.rounds.find(
+  //   (round) => round.date && round.date <= startDate
+  // );
 
-  if (invalidRound) {
-    toast.error(
-      `Round deadline must be after ${format(startDate, "dd-MM-yyyy")}`
-    );
-    return;
-  }
+  // if (invalidRound) {
+  //   toast.error(
+  //     `Round deadline must be after ${format(startDate, "dd-MM-yyyy")}`
+  //   );
+  //   return;
+  // }
 
   
-    const payload = {
-      rememberEmail: (values.rememberEmail ?? 0),
-      rounds: values.rounds.map((round, index) => ({
-        roundName: `Round ${index + 1}`,
-        date: round.date ? format(round.date, "yyyy-MM-dd") : null,
-      })),
-    };
+  //   const payload = {
+  //     rememberEmail: (values.rememberEmail ?? 0),
+  //     rounds: values.rounds.map((round, index) => ({
+  //       roundName: `Round ${index + 1}`,
+  //       date: round.date ? format(round.date, "yyyy-MM-dd") : null,
+  //     })),
+  //   };
 
-    mutate(payload);
+  //   mutate(payload);
+  // }
+
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
+  const startDateRaw = data?.data?.tournament?.startDate
+  const endDateRaw = data?.data?.tournament?.endDate
+
+  const start = startDateRaw ? new Date(startDateRaw) : null
+  const end = endDateRaw ? new Date(endDateRaw) : null
+
+  if (!start) {
+    toast.error("Tournament start date not found")
+    return
   }
+
+  if (!end) {
+    toast.error("Tournament end date not found")
+    return
+  }
+
+  // normalize time (avoid time issues)
+  const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate())
+  const endDay = new Date(end.getFullYear(), end.getMonth(), end.getDate())
+
+  // ✅ 1) Validate: each round date must be inside startDate & endDate
+  const invalidIndex = values.rounds.findIndex((round) => {
+    if (!round.date) return false
+    const d = new Date(round.date.getFullYear(), round.date.getMonth(), round.date.getDate())
+    return d < startDay || d > endDay
+  })
+
+  if (invalidIndex !== -1) {
+    toast.error(
+      `Round ${invalidIndex + 1} deadline must be between ${format(
+        startDay,
+        "dd-MM-yyyy"
+      )} and ${format(endDay, "dd-MM-yyyy")}`
+    )
+    return
+  }
+
+ // ✅ Duplicate round date check (same date can't be used in multiple rounds)
+const seen = new Set<string>()
+
+for (let i = 0; i < values.rounds.length; i++) {
+  const d = values.rounds[i]?.date
+  if (!d) continue // ignore empty dates
+
+  const key = format(d, "yyyy-MM-dd") // normalize to day
+
+  if (seen.has(key)) {
+    toast.error(`Same deadline date can't be used in multiple rounds: ${format(d, "dd-MM-yyyy")}`)
+    return
+  }
+
+  seen.add(key)
+}
+
+  // ✅ 3) Sequential round date check (Round N must be AFTER Round N-1)
+  for (let i = 1; i < values.rounds.length; i++) {
+    const prev = values.rounds[i - 1]?.date
+    const curr = values.rounds[i]?.date
+
+    // If you want required dates, replace this with an error instead of continue
+    if (!prev || !curr) continue
+
+    const prevDay = new Date(prev.getFullYear(), prev.getMonth(), prev.getDate())
+    const currDay = new Date(curr.getFullYear(), curr.getMonth(), curr.getDate())
+
+    if (currDay <= prevDay) {
+      toast.error(
+        `Round ${i + 1} deadline must be after Round ${i} (${format(
+          prevDay,
+          "dd-MM-yyyy"
+        )})`
+      )
+      return
+    }
+  }
+
+  const payload = {
+    rememberEmail: values.rememberEmail ?? 0,
+    rounds: values.rounds.map((round, index) => ({
+      roundName: `Round ${index + 1}`,
+      date: round.date ? format(round.date, "yyyy-MM-dd") : null,
+    })),
+  }
+
+  mutate(payload)
+}
 
 
 

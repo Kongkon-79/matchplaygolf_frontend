@@ -133,7 +133,7 @@ const SetPasswordForm = () => {
                         )}
                     />
                   <div className="w-full flex items-center justify-center pt-4">
-                      <Button className="h-[52px] px-10 rounded-[10px] text-base leading-[120%] font-medium" disabled={isPending} type="submit">{isPending ? "Changing...." : "Change Password"}</Button>
+                      <Button className="h-[52px] px-10 rounded-[10px] text-base leading-[120%] font-medium" disabled={isPending} type="submit">{isPending ? "Changing...." : "Setup Your Password"}</Button>
                   </div>
                 </form>
             </Form>

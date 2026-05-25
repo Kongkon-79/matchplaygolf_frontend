@@ -1,4 +1,4 @@
-import Category from "./_components/landing-page/category";
+// import Category from "./_components/landing-page/category";
 import HowItWorks from "./_components/landing-page/how-it-works";
 import NewsLetterSubscription from "./_components/landing-page/newsletter-Subscription";
 import SportsArticles from "./_components/landing-page/sports-articles";
@@ -18,7 +18,7 @@ export default function Home() {
 
       <div className="container mx-auto space-y-24">
         <HowItWorks />
-        <Category />
+        {/* <Category /> */}
         <UpcomingTournaments />
         <SportsArticles />
         <NewsLetterSubscription />

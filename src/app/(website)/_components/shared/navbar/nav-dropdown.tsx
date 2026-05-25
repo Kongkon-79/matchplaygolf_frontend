@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,11 +10,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
 import Link from "next/link";
-import { LayoutDashboard, LogOut, User } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
+import { LayoutDashboard, User } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
+import LogoutConfirmDialog from "@/components/auth/logout-confirm-dialog";
 
 const NavDropdown = () => {
+  const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const session = useSession();
   const token = session?.data?.user?.accessToken;
   const role = session?.data?.user?.role;
@@ -75,18 +77,26 @@ const NavDropdown = () => {
             </Link>
           </DropdownMenuItem>
 
-          <DropdownMenuItem>
-            <button
-              onClick={() => {
-                signOut({ callbackUrl: "/" });
-              }}
-              className="flex items-center gap-1 text-primary"
-            >
-              <LogOut className="h-4 w-4" /> Log Out
-            </button>
+          <DropdownMenuItem
+            onSelect={(e) => {
+              e.preventDefault();
+              setIsLogoutOpen(true);
+            }}
+            className="cursor-pointer"
+          >
+            <div className="font-medium flex items-center gap-1 text-primary hover:text-primary/80">
+              Log Out
+            </div>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <LogoutConfirmDialog
+        callbackUrl="/"
+        open={isLogoutOpen}
+        onOpenChange={setIsLogoutOpen}
+        hideTrigger
+      />
     </div>
   );
 };

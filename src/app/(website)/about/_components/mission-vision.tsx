@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 const MissionVision = () => {
@@ -32,11 +33,12 @@ const MissionVision = () => {
             </p>
 
             <p>
-              At our core, we&apos;re driven by a single vision to transform how golf
-              tournaments are organized, played, and experienced. We&apos;re building
-              a platform that eliminates the hassle of manual tournament
-              management and replaces it with a system that&apos;s intuitive,
-              automated, and built for both organizers and players.
+              At our core, we&apos;re driven by a single vision to transform how
+              golf tournaments are organized, played, and experienced.
+              We&apos;re building a platform that eliminates the hassle of
+              manual tournament management and replaces it with a system
+              that&apos;s intuitive, automated, and built for both organizers
+              and players.
             </p>
 
             <p>
@@ -57,15 +59,17 @@ const MissionVision = () => {
             </p>
 
             <p>
-              With innovation, fairness, and a deep respect for tradition, we&apos;re
-              redefining the future of competitive golf one tournament at a
-              time.
+              With innovation, fairness, and a deep respect for tradition,
+              we&apos;re redefining the future of competitive golf one
+              tournament at a time.
             </p>
 
             <div className="flex justify-center lg:justify-start pt-2">
-              <Button className="w-full sm:w-auto px-6 py-3 text-sm sm:text-base">
-                Join Tournament
-              </Button>
+              <Link href={`/tournaments`}>
+                <Button className="w-full sm:w-auto px-6 py-3 text-sm sm:text-base">
+                  Join Tournament
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -115,9 +119,11 @@ const MissionVision = () => {
             </p>
 
             <div className="flex justify-center lg:justify-start pt-2">
-              <Button className="w-full sm:w-auto px-6 py-3 text-sm sm:text-base">
-                Join Tournament
-              </Button>
+              <Link href={`/tournaments`}>
+                <Button className="w-full sm:w-auto px-6 py-3 text-sm sm:text-base">
+                  Join Tournament
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

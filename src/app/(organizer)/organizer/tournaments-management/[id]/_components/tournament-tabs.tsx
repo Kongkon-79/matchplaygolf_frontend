@@ -43,7 +43,7 @@ const TournamentsDetails = ({id}:{id:string}) => {
   return (
 
     <div>
-      <TournamentsHeader tournamentName={tournamentName}/>
+      <TournamentsHeader tournamentName={tournamentName} description="Manage and edit your tournament"/>
       <div className="p-6">
 
       {/* sub-pages */}

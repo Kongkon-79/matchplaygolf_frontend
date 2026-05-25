@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 const HowItWorks = () => {
@@ -32,20 +33,38 @@ const HowItWorks = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 mt-10">
         {items.map((item, index) => (
-          <div
-            key={index}
-            className="p-8 shadow-[0px_8px_10px_6px_#0000001A] rounded-lg hover:scale-105 duration-200 transition-all"
-          >
-            <Image
-              src={item.image}
-              alt="img.png"
-              width={1000}
-              height={1000}
-              className="h-16 w-16 rounded-full mx-auto"
-            />
-            <h3 className="font-semibold my-3 text-lg">{item.title}</h3>
-            <p className="text-gray-600 text-md">{item.desc}</p>
-          </div>
+          index === 0 ? (
+            <Link
+              key={index}
+              href="/sign-up"
+              className="block p-8 shadow-[0px_8px_10px_6px_#0000001A] rounded-lg hover:scale-105 duration-200 transition-all cursor-pointer"
+            >
+              <Image
+                src={item.image}
+                alt="img.png"
+                width={1000}
+                height={1000}
+                className="h-16 w-16 rounded-full mx-auto"
+              />
+              <h3 className="font-semibold my-3 text-lg">{item.title}</h3>
+              <p className="text-gray-600 text-md">{item.desc}</p>
+            </Link>
+          ) : (
+            <div
+              key={index}
+              className="p-8 shadow-[0px_8px_10px_6px_#0000001A] rounded-lg hover:scale-105 duration-200 transition-all"
+            >
+              <Image
+                src={item.image}
+                alt="img.png"
+                width={1000}
+                height={1000}
+                className="h-16 w-16 rounded-full mx-auto"
+              />
+              <h3 className="font-semibold my-3 text-lg">{item.title}</h3>
+              <p className="text-gray-600 text-md">{item.desc}</p>
+            </div>
+          )
         ))}
       </div>
     </div>

@@ -16,7 +16,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ProfileApiResponse } from "./personal-information-data-type";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
@@ -39,17 +39,18 @@ const formSchema = z.object({
   sportNationalId: z.string().min(2, {
     message: "Sport National Id must be at least 2 characters.",
   }),
-  handicap: z.string().min(2, {
-    message: "Handicap Index must be at least 2 characters.",
+  handicap: z.string().min(1, {
+    message: "Handicap Index must be at least 1 characters.",
   }),
-  whsNumber: z.string().min(2, {
-    message: "Whs Number must be at least 2 characters.",
+  whsNumber: z.string().min(1, {
+    message: "Whs Number must be at least 1 characters.",
   }),
 });
 
 const PersonalInformationForm = () => {
   const session = useSession();
   const token = (session?.data?.user as { accessToken: string })?.accessToken;
+  const queryClient = useQueryClient();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -92,7 +93,7 @@ const PersonalInformationForm = () => {
         fullName: data?.data?.fullName,
         phone: data?.data?.phone,
         email: data?.data?.email,
-        country: data?.data?.clubName,
+        country: data?.data?.country,
         sportNationalId: data?.data?.sportNationalId,
         handicap: data?.data?.handicap,
         whsNumber: data?.data?.whsNumber,
@@ -124,6 +125,7 @@ const PersonalInformationForm = () => {
         return;
       }
       toast.success(data?.message || "Personal Info updated successfull");
+      queryClient.invalidateQueries({ queryKey: ["personal-info"] });
       form.reset();
     },
   });
@@ -227,6 +229,7 @@ const PersonalInformationForm = () => {
                     </FormLabel>
                     <FormControl>
                       <Input
+                        
                         className="w-full h-[48px] py-2 px-3 rounded-[8px] border border-[#C0C3C1] text-base font-medium leading-[120%] text-[#434C45)]"
                         placeholder="(555) 123-4567"
                         {...field}
@@ -337,7 +340,7 @@ const PersonalInformationForm = () => {
             </div>
 
             {/* Buttons */}
-            <div className="flex justify-end gap-4 pt-6">
+            <div className="flex flex-col md:flex-row justify-end gap-4 pt-6">
               <Button
                 type="button"
                 variant="outline"

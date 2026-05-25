@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
-const TournamentsHeader = ({tournamentName}:{tournamentName:string}) => {
+const TournamentsHeader = ({tournamentName, description}:{tournamentName:string, description: string}) => {
   console.log("dd", tournamentName)
 
   return (
@@ -13,7 +13,8 @@ const TournamentsHeader = ({tournamentName}:{tournamentName:string}) => {
           <Link href="/organizer/tournaments-management"><ChevronLeft className="inline mr-1 w-8 h-8" /> </Link> {tournamentName || "N/A"}
         </h1>
         <p className="text-sm font-normal text-[#424242] leading-[150%] ml-11">
-          Manage and edit your tournament
+          {description}
+          
         </p>
       </div>
     </div>

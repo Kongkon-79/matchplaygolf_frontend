@@ -3,14 +3,15 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button } from "@/components/ui/button"
-import { useSession } from "next-auth/react"
-import { TournamentResponseData } from "./single-tournament-data-type"
+import { Button } from "@/components/ui/button";
+import { useSession } from "next-auth/react";
+import { TournamentResponseData } from "./single-tournament-data-type";
 import { toast } from "sonner";
 import Link from "next/link";
 
 const TournamentDrawPage = (data: { data: TournamentResponseData }) => {
-  const tournamentId = (data?.data?.tournament as unknown as { _id: string })?._id;
+  const tournamentId = (data?.data?.tournament as unknown as { _id: string })
+    ?._id;
   const { data: session } = useSession();
   const token = (session?.user as { accessToken: string })?.accessToken;
 
@@ -19,10 +20,9 @@ const TournamentDrawPage = (data: { data: TournamentResponseData }) => {
   const [eventLoading, setEventLoading] = useState(false);
   const [eventDrawnLoading, setEventDrawnLoading] = useState(false);
 
-  console.log(data)
+  console.log(data);
 
-
-  // handle participant invite send email 
+  // handle participant invite send email
 
   const handleSendEmails = async () => {
     if (!tournamentId || !token) return;
@@ -39,7 +39,7 @@ const TournamentDrawPage = (data: { data: TournamentResponseData }) => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       const result = await res.json();
@@ -58,9 +58,7 @@ const TournamentDrawPage = (data: { data: TournamentResponseData }) => {
     }
   };
 
-
-
-  // handle event start 
+  // handle event start
 
   const handleEventStart = async () => {
     if (!tournamentId || !token) return;
@@ -76,7 +74,7 @@ const TournamentDrawPage = (data: { data: TournamentResponseData }) => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       const result = await res.json();
@@ -94,7 +92,7 @@ const TournamentDrawPage = (data: { data: TournamentResponseData }) => {
     }
   };
 
-  // handle event drawn 
+  // handle event drawn
   const handleEventDrawn = async () => {
     if (!tournamentId || !token) return;
 
@@ -109,7 +107,7 @@ const TournamentDrawPage = (data: { data: TournamentResponseData }) => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       const result = await res.json();
@@ -127,15 +125,29 @@ const TournamentDrawPage = (data: { data: TournamentResponseData }) => {
     }
   };
 
-
   return (
     <div>
-      <h3 className="text-lg md:text-xl lg:text-2xl text-[#181818] font-bold leading-[150%]">Create Draw</h3>
+      <h3 className="text-lg md:text-xl lg:text-2xl text-[#181818] font-bold leading-[150%]">
+        Create Draw
+      </h3>
       <ul className="py-4 md:py-5 lg:py-6">
-        <li className="text-sm md:text-base leading-[150%] text-[#181818] font-normal">You have {data?.data?.tournament?.totalParticipants || 0} participants added out of {data?.data?.tournament?.drawSize || 0} needed.</li>
-        <li className="text-sm md:text-base leading-[150%] text-[#181818] font-normal py-3">You have {data?.data?.tournament?.totalParticipants || 0} participants registered.</li>
-        <li className="text-sm md:text-base leading-[150%] text-[#181818] font-normal">You have {data?.data?.tournament?.numberOfSeeds
- || 0} of participants seeded.</li>
+        <li className="text-sm md:text-base leading-[150%] text-[#181818] font-normal">
+          You have{" "}
+         {data?.data?.tournament?.totalParticipants || 0 } { " "}
+           participants added out of{" "}
+          {data?.data?.tournament?.format === "Pairs"
+            ? data?.data?.tournament?.drawSize * 2
+            : data?.data?.tournament?.drawSize}{" "}
+          needed.
+        </li>
+        <li className="text-sm md:text-base leading-[150%] text-[#181818] font-normal py-3">
+          You have {data?.data?.tournament?.totalParticipants || 0} participants
+          registered.
+        </li>
+        <li className="text-sm md:text-base leading-[150%] text-[#181818] font-normal">
+          You have {data?.data?.tournament?.numberOfSeeds || 0} of participants
+          seeded.
+        </li>
       </ul>
 
       <div className="pt-2">
@@ -152,21 +164,22 @@ const TournamentDrawPage = (data: { data: TournamentResponseData }) => {
               ? "Emails Sent"
               : "Send Participant Invite Emails"}
         </Button>
-
       </div>
 
       {/* Buttons */}
       <div className="flex justify-start items-center gap-4 pt-6 pb-10 md:pb-14 lg:pb-20">
         <Button
-        onClick={handleEventDrawn}
-            disabled={eventDrawnLoading}
+          onClick={handleEventDrawn}
+          disabled={eventDrawnLoading}
           type="button"
           variant="outline"
           className="h-[49px] bg-[#FEECEE] hover:bg-[#FEECEE] text-[#8E938F] text-base font-medium leading-[150%] border-none rounded-[8px] py-3 px-5 md:px-[63px]"
         >
           Event Drawn
         </Button>
-        <Link href={`/organizer/tournaments-management/tournament-details/${tournamentId}`}>
+        <Link
+          href={`/organizer/tournaments-management/tournament-details/${tournamentId}`}
+        >
           <Button
             type="button"
             variant="outline"
@@ -183,7 +196,6 @@ const TournamentDrawPage = (data: { data: TournamentResponseData }) => {
         >
           {eventLoading ? "Starting..." : "Event Started"}
         </Button>
-
       </div>
 
       {/* <div className="flex justify-start items-center gap-6 pt-6">
@@ -210,9 +222,8 @@ const TournamentDrawPage = (data: { data: TournamentResponseData }) => {
           Update Even (Active)
         </Button>
       </div> */}
-
     </div>
-  )
-}
+  );
+};
 
-export default TournamentDrawPage
+export default TournamentDrawPage;

@@ -9,25 +9,36 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Trash } from "lucide-react";
-import MatchPlayGolfPagination from "@/components/ui/matchplaygolf-pagination";
+import { Eye, Plus, SquarePen, Trash } from "lucide-react";
+
 import { Input } from "@/components/ui/input";
 import DeleteModal from "@/components/modals/delete-modal";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import TableSkeletonWrapper from "@/components/shared/TableSkeletonWrapper/TableSkeletonWrapper";
-import ErrorContainer from "@/components/shared/ErrorContainer/ErrorContainer";
-import NotFound from "@/components/shared/NotFound/NotFound";
+
 import { useSession } from "next-auth/react";
 import { MatchApiResponse } from "./matches-data-type";
 import moment from "moment";
 import Link from "next/link";
 import { useDebounce } from "@/hooks/useDebounce";
 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import SwapPlayerContainer from "../swap-player/_components/swap-player-container";
+import TableSkeleton from "@/app/(organizer)/_components/player-paricipation-loading";
+import ErrorContainer from "@/components/shared/ErrorContainer/ErrorContainer";
+import NotFound from "@/components/shared/NotFound/NotFound";
+import MatchPlayGolfPagination from "@/components/ui/matchplaygolf-pagination";
+
 const MatchesManagementContainer = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [swapPlayerModalOpen, setSwapPlayerModalOpen] = useState(false);
   const [matchId, setMatchId] = useState("");
   const debouncedSearch = useDebounce(search, 500);
 
@@ -43,7 +54,7 @@ const MatchesManagementContainer = () => {
     queryKey: ["matches", currentPage, debouncedSearch],
     queryFn: async () => {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/match?page=${currentPage}&limit=8&tournamentName=${debouncedSearch}`
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/match?page=${currentPage}&limit=8&tournamentName=${debouncedSearch}`,
       );
       return res.json();
     },
@@ -54,7 +65,7 @@ const MatchesManagementContainer = () => {
   if (isLoading) {
     content = (
       <div>
-        <TableSkeletonWrapper count={5} />
+        <TableSkeleton />
       </div>
     );
   } else if (isError) {
@@ -95,6 +106,9 @@ const MatchesManagementContainer = () => {
                 Score
               </TableHead>
               <TableHead className="text-sm font-normal leading-[150%] text-[#343A40] text-center py-4 ">
+                Match Type
+              </TableHead>
+              <TableHead className="text-sm font-normal leading-[150%] text-[#343A40] text-center py-4 ">
                 Date
               </TableHead>
               <TableHead className="text-sm font-normal leading-[150%] text-[#343A40] text-center py-4 ">
@@ -116,7 +130,18 @@ const MatchesManagementContainer = () => {
                     {item?.round}
                   </TableCell>
                   <TableCell className="text-base font-normal text-[#68706A] leading-[150%] text-center py-4">
-                    {item?.matchType === "Pair" ? <div><span>{item?.pair1Score}</span> / {item?.pair2Score}</div> : <div><span>{item?.player1Score}</span> / {item?.player2Score}</div> }
+                    {item?.matchType === "Pairs" ? (
+                      <div>
+                        <span>{item?.pair1Score}</span> / {item?.pair2Score}
+                      </div>
+                    ) : (
+                      <div>
+                        <span>{item?.player1Score}</span> / {item?.player2Score}
+                      </div>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-base font-normal text-[#68706A] leading-[150%] text-center py-4">
+                    {item?.matchType}
                   </TableCell>
                   <TableCell className="text-base font-medium text-[#343A40] leading-[150%] text-center py-4">
                     {moment(item?.createdAt).format("MMM DD YYYY")}
@@ -124,22 +149,32 @@ const MatchesManagementContainer = () => {
 
                   <TableCell className="text-base font-medium text-[#68706A] leading-[150%] text-center py-4">
                     <button
-                      className={`w-[140px] h-[40px] ${item?.status === "Ongoing"
+                      className={`w-[140px] h-[40px] ${
+                        item?.status === "Ongoing"
                           ? "bg-[#E6FAEE] text-[#27BE69] py-2 px-4"
                           : item?.status === "Upcoming"
                             ? "bg-[#EFF6FF] text-[#2563EB] py-2 px-4"
                             : "bg-[#E8E8E8] text-[#6C757D] py-2 px-4"
-                        }`}
+                      }`}
                     >
                       {item?.status}
                     </button>
                   </TableCell>
                   <TableCell className="flex items-center justify-center gap-6 py-4">
-                    {/* <Link href={`/organizer/matches-management/${item?._id}`}>
-                    <button className="cursor-pointer">
-                      <SquarePen />
-                    </button>
-                    </Link> */}
+                    <Link
+                      href={`/organizer/matches-management/edit-match/${item?._id}`}
+                    >
+                      <button className="cursor-pointer">
+                        <SquarePen />
+                      </button>
+                    </Link>
+                    <Link
+                      href={`/organizer/matches-management/view-match/${item?._id}`}
+                    >
+                      <button className="cursor-pointer">
+                        <Eye className="h-6 w-6 " />
+                      </button>
+                    </Link>
                     <button
                       onClick={() => {
                         setDeleteModalOpen(true);
@@ -173,7 +208,7 @@ const MatchesManagementContainer = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       return res.json();
     },
@@ -209,9 +244,15 @@ const MatchesManagementContainer = () => {
               placeholder="Search..."
             />
           </div>
-          <div>
+          <div className="flex items-center gap-4">
+            {/* <button
+              onClick={() => setSwapPlayerModalOpen(true)}
+              className="flex items-center gap-2 bg-[#DF1020] py-3 px-5 rounded-[8px] text-[#F8F9FA] text-base font-medium leading-[150%] "
+            >
+              <Plus /> Swap Player
+            </button> */}
             <Link href="/organizer/matches-management/create-match">
-              <button className="flex items-center gap-2 bg-[#DF1020] py-3 px-9 rounded-[8px] text-[#F8F9FA] text-base font-medium leading-[150%] ">
+              <button className="flex items-center gap-2 bg-[#DF1020] py-3 px-5 rounded-[8px] text-[#F8F9FA] text-base font-medium leading-[150%] ">
                 <Plus /> Create Match
               </button>
             </Link>
@@ -251,9 +292,30 @@ const MatchesManagementContainer = () => {
             desc="Are you sure you want to delete this match?"
           />
         )}
+
+        <Dialog
+          open={swapPlayerModalOpen}
+          onOpenChange={setSwapPlayerModalOpen}
+        >
+          <DialogContent className="sm:max-w-[760px]">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-semibold text-[#343A40]">
+                Swap Player Between Matches
+              </DialogTitle>
+            </DialogHeader>
+            <SwapPlayerContainer
+              onSuccess={() => setSwapPlayerModalOpen(false)}
+              onCancel={() => setSwapPlayerModalOpen(false)}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
 };
 
 export default MatchesManagementContainer;
+
+
+
+

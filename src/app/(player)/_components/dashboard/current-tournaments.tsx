@@ -53,7 +53,8 @@ const CurrentTournaments = () => {
     queryKey: ["tournaments", filter],
     queryFn: async () => {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/user-dashboard/user-tournaments?status=${filter}`,
+        // `${process.env.NEXT_PUBLIC_BACKEND_URL}/user-dashboard/user-tournaments?status=${filter}`,
+         `${process.env.NEXT_PUBLIC_BACKEND_URL}/user-dashboard/user-tournaments`,
         {
           method: "GET",
           headers: {

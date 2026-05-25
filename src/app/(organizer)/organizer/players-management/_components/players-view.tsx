@@ -29,7 +29,7 @@ const PlayersView = ({
             <strong>Player Name :</strong> {tournamentData?.playerDetails?.fullName || "N/A"}
           </p>
           <p>
-            <strong>Player Email :</strong> {tournamentData?.playerDetails?.fullName || "N/A"}
+            <strong>Player Email :</strong> {tournamentData?.playerDetails?.email || "N/A"}
           </p>
           <p>
             <strong>Phone :</strong> {tournamentData?.playerDetails?.phone || "N/A"}
